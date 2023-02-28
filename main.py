@@ -15,8 +15,8 @@ INDENT = 50 # Отступ от края окна
 WINDOW_WIDTH = 2*INDENT + (N-1) * DISTANSE # Ширина окна 
 WINDOW_HEIGHT = 2*INDENT + (M-1) * DISTANSE # Высота окна
 
-ACTIVE_COLOR = (255, 91, 71) # Цвет активного узла и активного связи RGB
-PASSIVE_COLOR = (65, 105, 255) # Цвет пассивного узла и пассивного связи в RGB
+ACTIVE_COLOR = (255, 91, 71) # Цвет активного узла и активной связи RGB
+PASSIVE_COLOR = (65, 105, 255) # Цвет пассивного узла и пассивной связи в RGB
 BACKGROUND_COLOR = (220, 220, 220) # Цвет фона в RGB
 
 class Node(object):
