@@ -248,6 +248,8 @@ def main():
             # Проверка: закрыто ли окно
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                new_grid.update()
  
         for link in new_grid.links_list:
             # Отрисовка связей    
