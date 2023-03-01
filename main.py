@@ -213,20 +213,24 @@ class Grid(Node):
 
 
 def dfs(node: Node, cluster: Cluster) -> None:
-    """Рекурсивный поиск в глубину по активным узлам"""
-    cluster.nodes_list.append(node)
-    node.cluster = cluster 
+    """Итеративный поиск в глубину по активным узлам"""
+    to_visit = [node, ]
+    while to_visit:
+        node = to_visit.pop()
+        cluster.nodes_list.append(node)
+        node.cluster = cluster 
     
-    if node.index.j == 0:
-        cluster.is_left_infinity = True
-    if node.index.j == N - 1:
-        cluster.is_right_infinity = True
+        if node.index.j == 0:
+            cluster.is_left_infinity = True
+        if node.index.j == N - 1:
+            cluster.is_right_infinity = True
 
-    for link in node.links:
-        other_node = link.get_other_node(node)
-        if (other_node is not None) and (link.is_active):
-            if other_node.cluster is None:
-                dfs(other_node, cluster)
+        for link in node.links:
+            other_node = link.get_other_node(node)
+            if (other_node is not None) and (link.is_active):
+                if other_node.cluster is None:
+                    to_visit.append(other_node)
+            
             
             
 def main():
