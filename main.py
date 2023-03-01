@@ -1,5 +1,5 @@
 from collections import namedtuple
-from random import random
+from random import random, choices
 import pygame
 
 #Если у Вас не установлена библиотека pygame откройте cmd и введите pip install pygame
@@ -15,8 +15,9 @@ INDENT = 50 # Отступ от края окна
 WINDOW_WIDTH = 2*INDENT + (N-1) * DISTANSE # Ширина окна 
 WINDOW_HEIGHT = 2*INDENT + (M-1) * DISTANSE # Высота окна
 
+DEBUG_CLASTERS = True
 ACTIVE_COLOR = (255, 91, 71) # Цвет активного узла и активной связи RGB
-PASSIVE_COLOR = (65, 105, 255) # Цвет пассивного узла и пассивной связи в RGB
+PASSIVE_COLOR = (200, 200, 200) # Цвет пассивного узла и пассивной связи в RGB
 BACKGROUND_COLOR = (220, 220, 220) # Цвет фона в RGB
 
 class Node(object):
@@ -55,6 +56,8 @@ class Node(object):
     def get_color(self):
         """Функция возвращает цвет узла"""
         if self.is_active():
+            if DEBUG_CLASTERS:
+                return self.cluster.color
             return ACTIVE_COLOR
         else:
             return PASSIVE_COLOR
@@ -84,6 +87,8 @@ class Link(Node):
     def get_color(self):
         """Функция возвращает цвет связи"""
         if self.is_active:
+            if DEBUG_CLASTERS:
+                return self.nodes[0].cluster.color
             return ACTIVE_COLOR
         else:
             return PASSIVE_COLOR
@@ -107,6 +112,7 @@ class Cluster(Node):
         self.is_left_infinity = False # Имеет ли кластер узлы на левой границе
         self.is_right_infinity = False # Имеет ли кластер узлы на правой границе
         self.is_infinity = False # Является ли кластер бесконечным
+        self.color = choices(range(256), k=3)
 
 class Grid(Node):
     """Класс Сетка"""
