@@ -19,7 +19,7 @@ ACTIVE_COLOR = (255, 91, 71) # Цвет активного узла и акти�
 PASSIVE_COLOR = (65, 105, 255) # Цвет пассивного узла и пассивной связи в RGB
 BACKGROUND_COLOR = (220, 220, 220) # Цвет фона в RGB
 
-class Node(object):
+class Node:
     """Класс Узел"""
 
     def __init__(self, i: int, j: int):
@@ -61,7 +61,7 @@ class Node(object):
         
 
 
-class Link(Node):
+class Link:
     """Класс Связь"""
 
     def __init__(self, first_node: Node, second_node: Node):
@@ -97,7 +97,7 @@ class Link(Node):
         
         return None
 
-class Cluster(Node):
+class Cluster:
     """Класс Кластер"""
 
     def __init__(self):
@@ -108,7 +108,7 @@ class Cluster(Node):
         self.is_right_infinity = False # Имеет ли кластер узлы на правой границе
         self.is_infinity = False # Является ли кластер бесконечным
 
-class Grid(Node):
+class Grid:
     """Класс Сетка"""
 
     def __init__(self):
