@@ -208,7 +208,10 @@ class Grid(Node):
         """Процедура обновления сетки"""
         for link in self.links_list:
             link.update()
-        self.clusters_list = []
+        for cluster in self.clusters_list:
+            for node in cluster.nodes_list:
+                node.cluster = None
+        self.clusters_list.clear()
         self.find_clusters()
 
 
