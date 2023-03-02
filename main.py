@@ -4,22 +4,23 @@ import pygame
 
 #Если у Вас не установлена библиотека pygame откройте cmd и введите pip install pygame
 
-PROBABILITY = 0.6 # Вероятность того, что связь будет открытая
-M = 25 # Число строк i
-N = 50 # Число колонок j
+PROBABILITY = 0.5 # Вероятность того, что связь будет открытая
+M = 100 # Число строк i
+N = 160 # Число колонок j
 
 
-DISTANSE = 20 # Расстояние между узлами
+DISTANSE = 4 # Расстояние между узлами
 INDENT = 50 # Отступ от края окна
+SCALE = int(DISTANSE / 4) # Размер узла
 
 WINDOW_WIDTH = 2*INDENT + (N-1) * DISTANSE # Ширина окна 
 WINDOW_HEIGHT = 2*INDENT + (M-1) * DISTANSE # Высота окна
 
 ACTIVE_COLOR = (255, 91, 71) # Цвет активного узла и активной связи RGB
 PASSIVE_COLOR = (65, 105, 255) # Цвет пассивного узла и пассивной связи в RGB
-BACKGROUND_COLOR = (220, 220, 220) # Цвет фона в RGB
+BACKGROUND_COLOR = (200, 200, 200) # Цвет фона в RGB
 
-class Node(object):
+class Node:
     """Класс Узел"""
 
     def __init__(self, i: int, j: int):
@@ -61,7 +62,7 @@ class Node(object):
         
 
 
-class Link(Node):
+class Link:
     """Класс Связь"""
 
     def __init__(self, first_node: Node, second_node: Node):
@@ -97,18 +98,19 @@ class Link(Node):
         
         return None
 
-class Cluster(Node):
+class Cluster:
     """Класс Кластер"""
 
     def __init__(self):
         """Инициализация"""
 
         self.nodes_list = [] # Список узлов кластера
+        self.links_list = [] # Список связей кластера
         self.is_left_infinity = False # Имеет ли кластер узлы на левой границе
         self.is_right_infinity = False # Имеет ли кластер узлы на правой границе
         self.is_infinity = False # Является ли кластер бесконечным
 
-class Grid(Node):
+class Grid:
     """Класс Сетка"""
 
     def __init__(self):
@@ -232,7 +234,7 @@ def dfs(node: Node, cluster: Cluster) -> None:
 def main():
     
     new_grid = Grid()
-    new_grid.print_grid()
+    #new_grid.print_grid()
 
     # Инициализация окна
     pygame.init()
@@ -250,10 +252,10 @@ def main():
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 new_grid.update()
- 
+
         for link in new_grid.links_list:
             # Отрисовка связей    
-            pygame.draw.line(window, link.get_color(), link.position[0], link.position[1], 5)
+            pygame.draw.line(window, link.get_color(), link.position[0], link.position[1], SCALE)
 
         for i in range(M):
             # Отрисовка узлов
@@ -262,7 +264,7 @@ def main():
                     # Угловые узлы не рисуем для удобства
                     continue
 
-                pygame.draw.circle(window, new_grid.nodes_matrix[i][j].get_color(), new_grid.nodes_matrix[i][j].position, 5)
+                pygame.draw.circle(window, new_grid.nodes_matrix[i][j].get_color(), new_grid.nodes_matrix[i][j].position, 0)
         
         
         # Обновление экрана
