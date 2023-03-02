@@ -1,17 +1,19 @@
 from collections import namedtuple
 from random import random
 import pygame
+from queue import Queue
 
 #Если у Вас не установлена библиотека pygame откройте cmd и введите pip install pygame
 
 PROBABILITY = 0.5 # Вероятность того, что связь будет открытая
 M = 100 # Число строк i
-N = 160 # Число колонок j
+N = 100 # Число колонок j
 
 
-DISTANSE = 4 # Расстояние между узлами
+DISTANSE = 2 # Расстояние между узлами
 INDENT = 50 # Отступ от края окна
-SCALE = int(DISTANSE / 4) # Размер узла
+LINK_SCALE = 1 # Размер связи
+NODE_SCALE = 0 # Размер узла
 
 WINDOW_WIDTH = 2*INDENT + (N-1) * DISTANSE # Ширина окна 
 WINDOW_HEIGHT = 2*INDENT + (M-1) * DISTANSE # Высота окна
@@ -158,51 +160,53 @@ class Grid:
     def print_grid(self):
         """Процедура вывода сетки в консоль"""
         
-        # Вывод узлов
-        for i in range(M):
-            for j in range(N):
-                if self.nodes_matrix[i][j].is_active():
-                    print("●", end="")
-                else:
-                    print("○", end="")
+        # # Вывод узлов
+        # for i in range(M):
+        #     for j in range(N):
+        #         if self.nodes_matrix[i][j].is_active():
+        #             print("●", end="")
+        #         else:
+        #             print("○", end="")
                 
-            print()
-        print()
+        #     print()
+        # print()
         
-        # Вывод связей
-        for link in self.links_list:
-            first_node, second_node = link.nodes
-            print(first_node.index, end="")
-            if link.is_active:
-                print("==", end="")
-            else:
-                print("--", end="")
-            print(second_node.index)
-        print()
+        # # Вывод связей
+        # for link in self.links_list:
+        #     first_node, second_node = link.nodes
+        #     print(first_node.index, end="")
+        #     if link.is_active:
+        #         print("==", end="")
+        #     else:
+        #         print("--", end="")
+        #     print(second_node.index)
+        # print()
 
         # Вывод кластеров
+        counter = 0
         for cluster in self.clusters_list:
-            print()
+            
             if cluster.is_infinity:
-                print("***", end=" ")
-            for node in cluster.nodes_list:
-                print(node.index, end=" ")
-            print()
-        print()
+                counter += 1
+            
+            
+        print(f"Число бесконечных кластеров в сетке: {counter}")
             
 
     def find_clusters(self):
         """Процедура поиска кластеров в сетке"""
+        
+        j = 0
         for i in range(M):
-            for j in range(N):
-                node = self.nodes_matrix[i][j]
-                if node.is_active() and node.cluster is None:
-                    new_cluster = Cluster()
-                    dfs(node, new_cluster)
+            
+            node = self.nodes_matrix[i][j]
+            if node.is_active() and node.cluster is None:
+                new_cluster = Cluster()
+                bfs(node, new_cluster)
 
-                    new_cluster.is_infinity = new_cluster.is_left_infinity and new_cluster.is_right_infinity
-                        
-                    self.clusters_list.append(new_cluster)
+                new_cluster.is_infinity = new_cluster.is_left_infinity and new_cluster.is_right_infinity
+                    
+                self.clusters_list.append(new_cluster)
         
         
 
@@ -228,13 +232,42 @@ def dfs(node: Node, cluster: Cluster) -> None:
         other_node = link.get_other_node(node)
         if (other_node is not None) and (link.is_active):
             if other_node.cluster is None:
+                cluster.links_list.append(link)
                 dfs(other_node, cluster)
+
+
+def bfs(node: Node, cluster: Cluster) -> None:
+    """Циклический поиск в ширину по активным узлам"""
+    
+    queue = []
+    queue.append(node)
+
+    while(len(queue) != 0):
+        
+        node = queue.pop(0)
+
+        cluster.nodes_list.append(node)
+        node.cluster = cluster 
+        
+        if node.index.j == 0:
+            cluster.is_left_infinity = True
+        if node.index.j == N - 1:
+            cluster.is_right_infinity = True
+        if  cluster.is_left_infinity and cluster.is_right_infinity:
+            break
+
+        for link in node.links:
+            other_node = link.get_other_node(node)
+            if (other_node.cluster is None) and (link.is_active):
+                
+                cluster.links_list.append(link)
+                queue.append(other_node)
             
             
 def main():
     
     new_grid = Grid()
-    #new_grid.print_grid()
+    new_grid.print_grid()
 
     # Инициализация окна
     pygame.init()
@@ -255,7 +288,7 @@ def main():
 
         for link in new_grid.links_list:
             # Отрисовка связей    
-            pygame.draw.line(window, link.get_color(), link.position[0], link.position[1], SCALE)
+            pygame.draw.line(window, link.get_color(), link.position[0], link.position[1], LINK_SCALE)
 
         for i in range(M):
             # Отрисовка узлов
@@ -264,7 +297,7 @@ def main():
                     # Угловые узлы не рисуем для удобства
                     continue
 
-                pygame.draw.circle(window, new_grid.nodes_matrix[i][j].get_color(), new_grid.nodes_matrix[i][j].position, 0)
+                pygame.draw.circle(window, new_grid.nodes_matrix[i][j].get_color(), new_grid.nodes_matrix[i][j].position, NODE_SCALE)
         
         
         # Обновление экрана
